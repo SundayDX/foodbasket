@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 购物篮 -->
+  <path d="M40 80 L160 80 L140 160 L60 160 Z" fill="#409EFF" stroke="#2C5282" stroke-width="4"/>
+  
+  <!-- 篮子手柄 -->
+  <path d="M70 80 Q100 40 130 80" stroke="#2C5282" stroke-width="4" fill="none"/>
+  
+  <!-- 食物图标 -->
+  <circle cx="85" cy="110" r="15" fill="#67C23A"/> <!-- 水果/蔬菜 -->
+  <rect x="105" y="100" width="20" height="20" rx="2" fill="#E6A23C"/> <!-- 包装食品 -->
+  
+  <!-- 文字 "FB" -->
+  <text x="75" y="145" font-family="Arial" font-weight="bold" font-size="24" fill="#FFFFFF">FB</text>
+</svg>

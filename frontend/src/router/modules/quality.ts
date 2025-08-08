@@ -1,4 +1,4 @@
-import { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
 const qualityRoutes: RouteRecordRaw = {
   path: '/quality',
@@ -18,6 +18,17 @@ const qualityRoutes: RouteRecordRaw = {
         title: '质量检查',
         icon: 'Check',
         keepAlive: true
+      }
+    },
+    {
+      path: 'create',
+      name: 'QualityCreate',
+      component: () => import('@/views/quality/create.vue'),
+      meta: {
+        title: '新建检查',
+        icon: 'Plus',
+        hidden: true,
+        activeMenu: '/quality/check'
       }
     },
     {

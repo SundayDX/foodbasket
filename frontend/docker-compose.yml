@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "80:80"
+    container_name: foodbasket-frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    # 如果需要连接后端API，可以取消注释以下配置
+    # depends_on:
+    #   - backend
+    # networks:
+    #   - app-network
+
+  # 开发环境服务（可选）
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    container_name: foodbasket-frontend-dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: yarn dev
+    profiles:
+      - dev
+
+# 如果需要连接后端，可以取消注释以下配置
+# networks:
+#   app-network:
+#     driver: bridge

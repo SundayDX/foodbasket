@@ -23,6 +23,75 @@ body {
   background: var(--background-color);
 }
 
+// 页面容器样式
+#app {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.app-main {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+// 确保内容区域占满宽度
+.el-row {
+  width: 100%;
+  margin: 0 !important;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.el-col {
+  flex-shrink: 0;
+}
+
+// 修复 Element Plus 栅格系统
+.el-row--flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+// 确保栅格列能够正确计算宽度
+.el-col-6 {
+  width: 25% !important;
+  flex: 0 0 25% !important;
+  max-width: 25% !important;
+}
+
+.el-col-12 {
+  width: 50% !important;
+  flex: 0 0 50% !important;
+  max-width: 50% !important;
+}
+
+.el-col-24 {
+  width: 100% !important;
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+// 确保统计卡片容器能够正确显示
+.statistics-row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  width: 100% !important;
+}
+
+// 修复布局容器宽度
+.app-wrapper {
+  width: 100%;
+  height: 100vh;
+}
+
+.main-container {
+  width: 100%;
+  flex: 1;
+}
+
 // Element Plus 样式覆盖
 .el-card {
   margin-bottom: 20px;

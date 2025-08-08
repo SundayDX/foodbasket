@@ -1,83 +1,71 @@
 <template>
-  <report-layout>
-    <template #filter>
-      <el-form :inline="true" :model="filterForm">
-        <el-form-item label="商品分类">
-          <el-select v-model="filterForm.category" clearable placeholder="选择商品分类">
-            <el-option
-              v-for="item in categories"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="报损原因">
-          <el-select v-model="filterForm.reason" clearable placeholder="选择报损原因">
-            <el-option
-              v-for="item in reasons"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="时间范围">
-          <el-date-picker
-            v-model="filterForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="YYYY-MM-DD"
+  <report-layout title="报损报表">
+    <template #filters>
+      <el-form-item label="商品分类">
+        <el-select v-model="filterForm.category" clearable placeholder="选择商品分类">
+          <el-option
+            v-for="item in categories"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="报损原因">
+        <el-select v-model="filterForm.reason" clearable placeholder="选择报损原因">
+          <el-option
+            v-for="item in reasons"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="时间范围">
+        <el-date-picker
+          v-model="filterForm.dateRange"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          value-format="YYYY-MM-DD"
+        />
+      </el-form-item>
     </template>
 
     <template #statistics>
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <statistic-card
-            title="报损总金额"
-            :value="statistics.totalAmount"
-            unit="元"
-            :trend="statistics.amountTrend"
-            :trend-ratio="statistics.amountRatio"
-          />
-        </el-col>
-        <el-col :span="6">
-          <statistic-card
-            title="报损率"
-            :value="statistics.damageRate"
-            unit="%"
-            :trend="statistics.rateTrend"
-            :trend-ratio="statistics.rateRatio"
-          />
-        </el-col>
-        <el-col :span="6">
-          <statistic-card
-            title="报损批次"
-            :value="statistics.batchCount"
-            unit="批"
-            :trend="statistics.batchTrend"
-            :trend-ratio="statistics.batchRatio"
-          />
-        </el-col>
-        <el-col :span="6">
-          <statistic-card
-            title="平均处理时长"
-            :value="statistics.avgProcessTime"
-            unit="小时"
-            :trend="statistics.timeTrend"
-            :trend-ratio="statistics.timeRatio"
-          />
-        </el-col>
-      </el-row>
+      <el-col :span="6">
+        <statistic-card
+          title="报损总金额"
+          :value="statistics.totalAmount"
+          unit="元"
+          :trend="statistics.amountRatio"
+        />
+      </el-col>
+      <el-col :span="6">
+        <statistic-card
+          title="报损率"
+          :value="statistics.damageRate"
+          unit="%"
+          :trend="statistics.rateRatio"
+        />
+      </el-col>
+      <el-col :span="6">
+        <statistic-card
+          title="报损批次"
+          :value="statistics.batchCount"
+          unit="批"
+          :trend="statistics.batchRatio"
+        />
+      </el-col>
+      <el-col :span="6">
+        <statistic-card
+          title="平均处理时长"
+          :value="statistics.avgProcessTime"
+          unit="小时"
+          :trend="statistics.timeRatio"
+        />
+      </el-col>
     </template>
 
     <template #charts>
@@ -85,31 +73,28 @@
         <el-col :span="12">
           <chart-card
             title="报损趋势分析"
+            :options="trendChartOptions"
             :loading="loading.trend"
-            @timeChange="handleTrendTimeChange"
-          >
-            <div ref="trendChartRef" style="width: 100%; height: 300px" />
-          </chart-card>
+            @range-change="handleTrendTimeChange"
+          />
         </el-col>
         <el-col :span="12">
           <chart-card
             title="报损原因分布"
+            :options="reasonChartOptions"
             :loading="loading.reason"
-            @timeChange="handleReasonTimeChange"
-          >
-            <div ref="reasonChartRef" style="width: 100%; height: 300px" />
-          </chart-card>
+            @range-change="handleReasonTimeChange"
+          />
         </el-col>
       </el-row>
       <el-row :gutter="20" class="mt-4">
         <el-col :span="24">
           <chart-card
             title="商品报损率排名"
+            :options="productChartOptions"
             :loading="loading.product"
-            @timeChange="handleProductTimeChange"
-          >
-            <div ref="productChartRef" style="width: 100%; height: 300px" />
-          </chart-card>
+            @range-change="handleProductTimeChange"
+          />
         </el-col>
       </el-row>
     </template>
@@ -182,15 +167,110 @@ import ReportLayout from '@/components/Report/ReportLayout.vue'
 import StatisticCard from '@/components/Report/StatisticCard.vue'
 import ChartCard from '@/components/Report/ChartCard.vue'
 
-// 图表引用
-const trendChartRef = ref<HTMLElement>()
-const reasonChartRef = ref<HTMLElement>()
-const productChartRef = ref<HTMLElement>()
+// 图表选项
+const trendChartOptions = ref<EChartsOption>({
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    }
+  },
+  legend: {
+    data: ['报损金额', '报损率']
+  },
+  xAxis: {
+    type: 'category',
+    data: ['1月', '2月', '3月', '4月', '5月', '6月']
+  },
+  yAxis: [
+    {
+      type: 'value',
+      name: '金额(元)'
+    },
+    {
+      type: 'value',
+      name: '报损率(%)',
+      max: 10,
+      position: 'right'
+    }
+  ],
+  series: [
+    {
+      name: '报损金额',
+      type: 'bar',
+      data: [15000, 14000, 16000, 13000, 12000, 11000]
+    },
+    {
+      name: '报损率',
+      type: 'line',
+      yAxisIndex: 1,
+      data: [3.5, 3.2, 3.8, 3.0, 2.8, 2.5]
+    }
+  ]
+})
 
-// 图表实例
-let trendChart: echarts.ECharts | null = null
-let reasonChart: echarts.ECharts | null = null
-let productChart: echarts.ECharts | null = null
+const reasonChartOptions = ref<EChartsOption>({
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    orient: 'vertical',
+    left: 'left'
+  },
+  series: [
+    {
+      name: '报损原因',
+      type: 'pie',
+      radius: '50%',
+      data: [
+        { value: 40, name: '过期' },
+        { value: 25, name: '破损' },
+        { value: 20, name: '品质问题' },
+        { value: 15, name: '运输损坏' }
+      ],
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+})
+
+const productChartOptions = ref<EChartsOption>({
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  legend: {
+    data: ['报损率', '报损金额']
+  },
+  xAxis: {
+    type: 'value',
+    name: '报损率(%)',
+    max: 10
+  },
+  yAxis: {
+    type: 'category',
+    data: ['西红柿', '苹果', '香蕉', '白菜', '猪肉'].reverse()
+  },
+  series: [
+    {
+      name: '报损率',
+      type: 'bar',
+      data: [5, 4, 3.5, 3, 2.5].reverse()
+    },
+    {
+      name: '报损金额',
+      type: 'bar',
+      data: [2500, 3000, 2000, 1500, 4000].reverse()
+    }
+  ]
+})
 
 // 加载状态
 const loading = ref({
@@ -270,135 +350,6 @@ const pagination = ref({
   pageSize: 10,
   total: 0
 })
-
-// 初始化图表
-const initCharts = () => {
-  // 报损趋势分析图表
-  if (trendChartRef.value) {
-    trendChart = echarts.init(trendChartRef.value)
-    const trendOption: EChartsOption = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'cross'
-        }
-      },
-      legend: {
-        data: ['报损金额', '报损率']
-      },
-      xAxis: {
-        type: 'category',
-        data: ['1月', '2月', '3月', '4月', '5月', '6月']
-      },
-      yAxis: [
-        {
-          type: 'value',
-          name: '金额(元)'
-        },
-        {
-          type: 'value',
-          name: '报损率(%)',
-          max: 10,
-          position: 'right'
-        }
-      ],
-      series: [
-        {
-          name: '报损金额',
-          type: 'bar',
-          data: [15000, 14000, 16000, 13000, 12000, 11000]
-        },
-        {
-          name: '报损率',
-          type: 'line',
-          yAxisIndex: 1,
-          data: [3.5, 3.2, 3.8, 3.0, 2.8, 2.5]
-        }
-      ]
-    }
-    trendChart.setOption(trendOption)
-  }
-
-  // 报损原因分布图表
-  if (reasonChartRef.value) {
-    reasonChart = echarts.init(reasonChartRef.value)
-    const reasonOption: EChartsOption = {
-      tooltip: {
-        trigger: 'item'
-      },
-      legend: {
-        orient: 'vertical',
-        left: 'left'
-      },
-      series: [
-        {
-          name: '报损原因',
-          type: 'pie',
-          radius: '50%',
-          data: [
-            { value: 40, name: '过期' },
-            { value: 25, name: '破损' },
-            { value: 20, name: '品质问题' },
-            { value: 15, name: '运输损坏' }
-          ],
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-          }
-        }
-      ]
-    }
-    reasonChart.setOption(reasonOption)
-  }
-
-  // 商品报损率排名图表
-  if (productChartRef.value) {
-    productChart = echarts.init(productChartRef.value)
-    const productOption: EChartsOption = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
-      },
-      legend: {
-        data: ['报损率', '报损金额']
-      },
-      xAxis: {
-        type: 'value',
-        name: '报损率(%)',
-        max: 10
-      },
-      yAxis: {
-        type: 'category',
-        data: ['西红柿', '苹果', '香蕉', '白菜', '猪肉'].reverse()
-      },
-      series: [
-        {
-          name: '报损率',
-          type: 'bar',
-          data: [5, 4, 3.5, 3, 2.5].reverse()
-        },
-        {
-          name: '报损金额',
-          type: 'bar',
-          data: [2500, 3000, 2000, 1500, 4000].reverse()
-        }
-      ]
-    }
-    productChart.setOption(productOption)
-  }
-}
-
-// 处理窗口大小变化
-const handleResize = () => {
-  trendChart?.resize()
-  reasonChart?.resize()
-  productChart?.resize()
-}
 
 // 搜索处理
 const handleSearch = () => {
@@ -491,16 +442,7 @@ const getStatusText = (status: string): string => {
 
 // 生命周期钩子
 onMounted(() => {
-  initCharts()
-  window.addEventListener('resize', handleResize)
-})
-
-// 组件卸载时清理
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-  trendChart?.dispose()
-  reasonChart?.dispose()
-  productChart?.dispose()
+  // 图表由 ChartCard 组件自动处理
 })
 </script>
 

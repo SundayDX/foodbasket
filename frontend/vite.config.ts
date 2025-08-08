@@ -10,6 +10,13 @@ export default defineConfig({
       '@': resolve(__dirname, 'src')
     }
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/styles/_variables" as *;`
+      }
+    }
+  },
   server: {
     host: '0.0.0.0',
     port: 5173,

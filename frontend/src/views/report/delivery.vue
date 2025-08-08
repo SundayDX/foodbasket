@@ -1,83 +1,71 @@
 <template>
-  <report-layout>
-    <template #filter>
-      <el-form :inline="true" :model="filterForm">
-        <el-form-item label="配送区域">
-          <el-select v-model="filterForm.area" clearable placeholder="选择配送区域">
-            <el-option
-              v-for="item in areas"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="配送员">
-          <el-select v-model="filterForm.deliveryStaff" clearable placeholder="选择配送员">
-            <el-option
-              v-for="item in deliveryStaff"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="时间范围">
-          <el-date-picker
-            v-model="filterForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="YYYY-MM-DD"
+  <report-layout title="配送报表">
+    <template #filters>
+      <el-form-item label="配送区域">
+        <el-select v-model="filterForm.area" clearable placeholder="选择配送区域">
+          <el-option
+            v-for="item in areas"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="配送员">
+        <el-select v-model="filterForm.deliveryStaff" clearable placeholder="选择配送员">
+          <el-option
+            v-for="item in deliveryStaff"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="时间范围">
+        <el-date-picker
+          v-model="filterForm.dateRange"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          value-format="YYYY-MM-DD"
+        />
+      </el-form-item>
     </template>
 
     <template #statistics>
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <statistic-card
-            title="平均配送时长"
-            :value="statistics.avgDeliveryTime"
-            unit="分钟"
-            :trend="statistics.timeRateTrend"
-            :trend-ratio="statistics.timeRateRatio"
-          />
-        </el-col>
-        <el-col :span="6">
-          <statistic-card
-            title="准时率"
-            :value="statistics.onTimeRate"
-            unit="%"
-            :trend="statistics.onTimeTrend"
-            :trend-ratio="statistics.onTimeRatio"
-          />
-        </el-col>
-        <el-col :span="6">
-          <statistic-card
-            title="客户满意度"
-            :value="statistics.satisfaction"
-            unit="分"
-            :trend="statistics.satisfactionTrend"
-            :trend-ratio="statistics.satisfactionRatio"
-          />
-        </el-col>
-        <el-col :span="6">
-          <statistic-card
-            title="配送单量"
-            :value="statistics.orderCount"
-            unit="单"
-            :trend="statistics.orderCountTrend"
-            :trend-ratio="statistics.orderCountRatio"
-          />
-        </el-col>
-      </el-row>
+      <el-col :span="6">
+        <statistic-card
+          title="平均配送时长"
+          :value="statistics.avgDeliveryTime"
+          unit="分钟"
+          :trend="statistics.timeRateRatio"
+        />
+      </el-col>
+      <el-col :span="6">
+        <statistic-card
+          title="准时率"
+          :value="statistics.onTimeRate"
+          unit="%"
+          :trend="statistics.onTimeRatio"
+        />
+      </el-col>
+      <el-col :span="6">
+        <statistic-card
+          title="客户满意度"
+          :value="statistics.satisfaction"
+          unit="分"
+          :trend="statistics.satisfactionRatio"
+        />
+      </el-col>
+      <el-col :span="6">
+        <statistic-card
+          title="配送单量"
+          :value="statistics.orderCount"
+          unit="单"
+          :trend="statistics.orderCountRatio"
+        />
+      </el-col>
     </template>
 
     <template #charts>
@@ -85,31 +73,28 @@
         <el-col :span="12">
           <chart-card
             title="配送效率分析"
+            :options="efficiencyChartOptions"
             :loading="loading.efficiency"
-            @timeChange="handleEfficiencyTimeChange"
-          >
-            <div ref="efficiencyChartRef" style="width: 100%; height: 300px" />
-          </chart-card>
+            @range-change="handleEfficiencyTimeChange"
+          />
         </el-col>
         <el-col :span="12">
           <chart-card
             title="客户满意度分析"
+            :options="satisfactionChartOptions"
             :loading="loading.satisfaction"
-            @timeChange="handleSatisfactionTimeChange"
-          >
-            <div ref="satisfactionChartRef" style="width: 100%; height: 300px" />
-          </chart-card>
+            @range-change="handleSatisfactionTimeChange"
+          />
         </el-col>
       </el-row>
       <el-row :gutter="20" class="mt-4">
         <el-col :span="24">
           <chart-card
             title="路线优化分析"
+            :options="routeChartOptions"
             :loading="loading.route"
-            @timeChange="handleRouteTimeChange"
-          >
-            <div ref="routeChartRef" style="width: 100%; height: 300px" />
-          </chart-card>
+            @range-change="handleRouteTimeChange"
+          />
         </el-col>
       </el-row>
     </template>
@@ -176,15 +161,47 @@ import ReportLayout from '@/components/Report/ReportLayout.vue'
 import StatisticCard from '@/components/Report/StatisticCard.vue'
 import ChartCard from '@/components/Report/ChartCard.vue'
 
-// 图表引用
-const efficiencyChartRef = ref<HTMLElement>()
-const satisfactionChartRef = ref<HTMLElement>()
-const routeChartRef = ref<HTMLElement>()
-
-// 图表实例
-let efficiencyChart: echarts.ECharts | null = null
-let satisfactionChart: echarts.ECharts | null = null
-let routeChart: echarts.ECharts | null = null
+// 图表选项
+const routeChartOptions = ref<EChartsOption>({
+  tooltip: {
+    trigger: 'axis'
+  },
+  legend: {
+    data: ['配送距离', '配送单数', '单均距离']
+  },
+  xAxis: {
+    type: 'category',
+    data: ['路线A', '路线B', '路线C', '路线D', '路线E']
+  },
+  yAxis: [
+    {
+      type: 'value',
+      name: '距离(km)'
+    },
+    {
+      type: 'value',
+      name: '订单数',
+      position: 'right'
+    }
+  ],
+  series: [
+    {
+      name: '配送距离',
+      type: 'bar',
+      data: [120, 150, 80, 200, 160]
+    },
+    {
+      name: '配送单数',
+      type: 'bar',
+      data: [20, 25, 15, 30, 22]
+    },
+    {
+      name: '单均距离',
+      type: 'line',
+      data: [6, 6, 5.3, 6.7, 7.3]
+    }
+  ]
+})
 
 // 加载状态
 const loading = ref({
@@ -214,6 +231,79 @@ const deliveryStaff = ref([
   { id: 2, name: '李四' },
   { id: 3, name: '王五' }
 ])
+
+// 图表选项
+const efficiencyChartOptions = ref<EChartsOption>({
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    }
+  },
+  legend: {
+    data: ['平均配送时长', '准时率']
+  },
+  xAxis: {
+    type: 'category',
+    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+  },
+  yAxis: [
+    {
+      type: 'value',
+      name: '时长(分钟)',
+      position: 'left'
+    },
+    {
+      type: 'value',
+      name: '准时率(%)',
+      position: 'right',
+      max: 100
+    }
+  ],
+  series: [
+    {
+      name: '平均配送时长',
+      type: 'bar',
+      data: [45, 42, 46, 43, 40, 48, 50]
+    },
+    {
+      name: '准时率',
+      type: 'line',
+      yAxisIndex: 1,
+      data: [95, 96, 94, 95, 97, 93, 92]
+    }
+  ]
+})
+
+const satisfactionChartOptions = ref<EChartsOption>({
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    orient: 'vertical',
+    left: 'left'
+  },
+  series: [
+    {
+      name: '满意度分布',
+      type: 'pie',
+      radius: '50%',
+      data: [
+        { value: 60, name: '非常满意' },
+        { value: 25, name: '满意' },
+        { value: 10, name: '一般' },
+        { value: 5, name: '不满意' }
+      ],
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+})
 
 // 统计数据
 const statistics = ref({
@@ -261,144 +351,6 @@ const pagination = ref({
   pageSize: 10,
   total: 0
 })
-
-// 初始化图表
-const initCharts = () => {
-  // 配送效率分析图表
-  if (efficiencyChartRef.value) {
-    efficiencyChart = echarts.init(efficiencyChartRef.value)
-    const efficiencyOption: EChartsOption = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'cross'
-        }
-      },
-      legend: {
-        data: ['平均配送时长', '准时率']
-      },
-      xAxis: {
-        type: 'category',
-        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-      },
-      yAxis: [
-        {
-          type: 'value',
-          name: '时长(分钟)',
-          position: 'left'
-        },
-        {
-          type: 'value',
-          name: '准时率(%)',
-          position: 'right',
-          max: 100
-        }
-      ],
-      series: [
-        {
-          name: '平均配送时长',
-          type: 'bar',
-          data: [45, 42, 46, 43, 40, 48, 50]
-        },
-        {
-          name: '准时率',
-          type: 'line',
-          yAxisIndex: 1,
-          data: [95, 96, 94, 95, 97, 93, 92]
-        }
-      ]
-    }
-    efficiencyChart.setOption(efficiencyOption)
-  }
-
-  // 客户满意度分析图表
-  if (satisfactionChartRef.value) {
-    satisfactionChart = echarts.init(satisfactionChartRef.value)
-    const satisfactionOption: EChartsOption = {
-      tooltip: {
-        trigger: 'item'
-      },
-      legend: {
-        orient: 'vertical',
-        left: 'left'
-      },
-      series: [
-        {
-          name: '满意度分布',
-          type: 'pie',
-          radius: '50%',
-          data: [
-            { value: 60, name: '非常满意' },
-            { value: 25, name: '满意' },
-            { value: 10, name: '一般' },
-            { value: 5, name: '不满意' }
-          ],
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-          }
-        }
-      ]
-    }
-    satisfactionChart.setOption(satisfactionOption)
-  }
-
-  // 路线优化分析图表
-  if (routeChartRef.value) {
-    routeChart = echarts.init(routeChartRef.value)
-    const routeOption: EChartsOption = {
-      tooltip: {
-        trigger: 'axis'
-      },
-      legend: {
-        data: ['配送距离', '配送单数', '单均距离']
-      },
-      xAxis: {
-        type: 'category',
-        data: ['路线A', '路线B', '路线C', '路线D', '路线E']
-      },
-      yAxis: [
-        {
-          type: 'value',
-          name: '距离(km)'
-        },
-        {
-          type: 'value',
-          name: '订单数',
-          position: 'right'
-        }
-      ],
-      series: [
-        {
-          name: '配送距离',
-          type: 'bar',
-          data: [120, 150, 80, 200, 160]
-        },
-        {
-          name: '配送单数',
-          type: 'bar',
-          data: [20, 25, 15, 30, 22]
-        },
-        {
-          name: '单均距离',
-          type: 'line',
-          data: [6, 6, 5.3, 6.7, 7.3]
-        }
-      ]
-    }
-    routeChart.setOption(routeOption)
-  }
-}
-
-// 处理窗口大小变化
-const handleResize = () => {
-  efficiencyChart?.resize()
-  satisfactionChart?.resize()
-  routeChart?.resize()
-}
 
 // 搜索处理
 const handleSearch = () => {
@@ -453,16 +405,7 @@ const handleRouteTimeChange = (range: string) => {
 
 // 生命周期钩子
 onMounted(() => {
-  initCharts()
-  window.addEventListener('resize', handleResize)
-})
-
-// 组件卸载时清理
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-  efficiencyChart?.dispose()
-  satisfactionChart?.dispose()
-  routeChart?.dispose()
+  // 图表由 ChartCard 组件自动处理
 })
 </script>
 

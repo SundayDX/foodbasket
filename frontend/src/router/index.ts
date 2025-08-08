@@ -1,6 +1,9 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import Layout from '@/layout/index.vue'
 import reportRoutes from './modules/report'
+import qualityRoutes from './modules/quality'
 
 export const constantRoutes: RouteRecordRaw[] = [
   {
@@ -107,32 +110,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       }
     ]
   },
-  {
-    path: '/quality',
-    component: Layout,
-    redirect: '/quality/check',
-    meta: { title: '质量管理', icon: 'CircleCheck' },
-    children: [
-      {
-        path: 'check',
-        component: () => import('@/views/quality/check.vue'),
-        name: 'QualityCheck',
-        meta: { title: '质量检查' }
-      },
-      {
-        path: 'standard',
-        component: () => import('@/views/quality/standard.vue'),
-        name: 'QualityStandard',
-        meta: { title: '质量标准' }
-      },
-      {
-        path: 'detail/:id',
-        component: () => import('@/views/quality/detail.vue'),
-        name: 'QualityDetail',
-        meta: { title: '检查详情', hidden: true, activeMenu: '/quality/check' }
-      }
-    ]
-  },
+  qualityRoutes,
   reportRoutes
 ]
 
@@ -140,6 +118,32 @@ const router = createRouter({
   history: createWebHistory(),
   routes: constantRoutes,
   scrollBehavior: () => ({ top: 0 })
+})
+
+// 路由守卫
+router.beforeEach(async (to, from, next) => {
+  // 设置页面标题
+  document.title = `${to.meta.title || ''} - Food Basket`
+
+  // 放行登录页
+  if (to.path === '/login') {
+    if (localStorage.getItem('food_basket_token')) {
+      next('/')
+      return
+    }
+    next()
+    return
+  }
+
+  // 检查是否有token
+  const hasToken = localStorage.getItem('food_basket_token')
+  if (!hasToken) {
+    ElMessage.warning('请先登录')
+    next(`/login?redirect=${to.path}`)
+    return
+  }
+
+  next()
 })
 
 export default router

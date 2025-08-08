@@ -3,7 +3,7 @@
     <el-card class="login-card">
       <template #header>
         <div class="card-header">
-          <img src="@/assets/logo.png" alt="Logo" class="logo">
+          <img src="@/assets/logo.svg" alt="Logo" class="logo">
           <h2>生鲜流通数据系统</h2>
         </div>
       </template>

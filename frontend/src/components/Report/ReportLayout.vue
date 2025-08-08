@@ -69,12 +69,12 @@
       </el-form>
     </div>
 
-    <!-- 统计卡片 -->
-    <div v-if="$slots.statistics" class="report-statistics">
-      <el-row :gutter="20">
-        <slot name="statistics" />
-      </el-row>
-    </div>
+         <!-- 统计卡片 -->
+     <div v-if="$slots.statistics" class="report-statistics">
+       <el-row :gutter="20" class="statistics-row">
+         <slot name="statistics" />
+       </el-row>
+     </div>
 
     <!-- 图表区域 -->
     <div v-if="$slots.charts" class="report-charts">
@@ -206,6 +206,11 @@ defineExpose({
 
 <style lang="scss" scoped>
 .report-layout {
+  width: 100%;
+  min-height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+
   .report-header {
     margin-bottom: $spacing-base;
 
@@ -247,20 +252,35 @@ defineExpose({
 
   .report-statistics {
     margin-bottom: $spacing-base;
+    width: 100%;
+
+    .statistics-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0 -10px;
+
+      .el-col {
+        padding: 0 10px;
+        margin-bottom: 20px;
+      }
+    }
   }
 
   .report-charts {
     margin-bottom: $spacing-base;
+    width: 100%;
   }
 
   .report-table {
     margin-bottom: $spacing-base;
+    width: 100%;
   }
 
   .report-pagination {
     display: flex;
     justify-content: flex-end;
     padding: $spacing-base 0;
+    width: 100%;
   }
 }
 </style>

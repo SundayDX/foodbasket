@@ -219,7 +219,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts'
 import type { EChartsOption } from 'echarts'
@@ -501,8 +501,41 @@ const handleTodoAction = (row: any) => {
 
 // 监听营业趋势图表类型变化
 watch(revenueChartType, (newType) => {
-  // TODO: 根据类型更新图表数据
-  console.log('Revenue chart type changed:', newType)
+  if (!revenueChart) return
+
+  const data = {
+    week: {
+      xAxis: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      revenue: [150000, 145000, 160000, 155000, 165000, 180000, 170000],
+      orders: [220, 210, 240, 230, 250, 270, 260]
+    },
+    month: {
+      xAxis: Array.from({ length: 30 }, (_, i) => `${i + 1}日`),
+      revenue: Array.from({ length: 30 }, () => Math.floor(Math.random() * 50000) + 140000),
+      orders: Array.from({ length: 30 }, () => Math.floor(Math.random() * 100) + 200)
+    },
+    year: {
+      xAxis: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      revenue: Array.from({ length: 12 }, () => Math.floor(Math.random() * 1000000) + 4000000),
+      orders: Array.from({ length: 12 }, () => Math.floor(Math.random() * 3000) + 6000)
+    }
+  }[newType]
+
+  revenueChart.setOption({
+    xAxis: {
+      data: data.xAxis
+    },
+    series: [
+      {
+        name: '营业额',
+        data: data.revenue
+      },
+      {
+        name: '订单数',
+        data: data.orders
+      }
+    ]
+  })
 })
 
 // 生命周期钩子

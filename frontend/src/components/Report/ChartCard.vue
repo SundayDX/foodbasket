@@ -51,7 +51,7 @@
           v-else
           ref="chartRef"
           class="chart-container"
-          :style="{ height: height + 'px' }"
+          :style="{ height: height + 'px', width: '100%' }"
         ></div>
       </div>
     </div>
@@ -113,7 +113,9 @@ const selectedRange = ref(props.timeRanges[0]?.value || '')
 // 初始化图表
 onMounted(async () => {
   await nextTick()
-  initChart()
+  if (props.options) {
+    initChart()
+  }
   window.addEventListener('resize', handleResize)
 })
 
@@ -139,7 +141,11 @@ watch(
 
 // 初始化图表
 const initChart = () => {
-  if (!chartRef.value) return
+  if (!chartRef.value || !props.options) {
+    console.log('ChartCard: 无法初始化图表', { chartRef: !!chartRef.value, options: !!props.options })
+    return
+  }
+  console.log('ChartCard: 初始化图表', props.title, props.options)
   chart = echarts.init(chartRef.value)
   chart.setOption(props.options)
 }
@@ -215,7 +221,7 @@ defineExpose({
       .error-icon {
         font-size: 24px;
         margin-bottom: $spacing-small;
-        color: $color-danger;
+        color: $danger-color;
       }
     }
   }

@@ -143,6 +143,8 @@ const getChartColor = (alpha = 1) => {
   height: 120px;
   display: flex;
   position: relative;
+  width: 100%;
+  min-width: 200px;
   overflow: hidden;
   transition: all 0.3s;
   cursor: pointer;
@@ -153,22 +155,22 @@ const getChartColor = (alpha = 1) => {
   }
 
   &.primary {
-    background: linear-gradient(135deg, $color-primary, lighten($color-primary, 15%));
+    background: linear-gradient(135deg, $primary-color, lighten($primary-color, 15%));
     color: #fff;
   }
 
   &.success {
-    background: linear-gradient(135deg, $color-success, lighten($color-success, 15%));
+    background: linear-gradient(135deg, $success-color, lighten($success-color, 15%));
     color: #fff;
   }
 
   &.warning {
-    background: linear-gradient(135deg, $color-warning, lighten($color-warning, 15%));
+    background: linear-gradient(135deg, $warning-color, lighten($warning-color, 15%));
     color: #fff;
   }
 
   &.danger {
-    background: linear-gradient(135deg, $color-danger, lighten($color-danger, 15%));
+    background: linear-gradient(135deg, $danger-color, lighten($danger-color, 15%));
     color: #fff;
   }
 
@@ -237,11 +239,11 @@ const getChartColor = (alpha = 1) => {
     .card-trend {
       .trend-value {
         &.up {
-          color: $color-success;
+          color: $success-color;
         }
 
         &.down {
-          color: $color-danger;
+          color: $danger-color;
         }
       }
 

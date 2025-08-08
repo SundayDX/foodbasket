@@ -6,8 +6,8 @@
       :class="{ 'is-collapsed': isCollapsed }"
     >
       <div class="logo-container flex-center">
-        <img src="@/assets/logo.png" alt="Logo" class="logo" v-if="!isCollapsed">
-        <img src="@/assets/logo-small.png" alt="Logo" class="logo-small" v-else>
+        <img v-if="!isCollapsed" src="@/assets/logo.svg" alt="Logo" class="logo">
+        <img v-else src="@/assets/logo-small.svg" alt="Logo" class="logo-small">
       </div>
       <el-scrollbar>
         <el-menu
@@ -160,13 +160,17 @@ const handleLogout = async () => {
     padding: $spacing-base;
     background-color: #2b2f3a;
 
-    .logo {
-      height: 32px;
+    .logo-text {
+      color: #fff;
+      font-size: 20px;
+      margin: 0;
       transition: all 0.3s;
     }
 
-    .logo-small {
-      height: 24px;
+    .logo-text-small {
+      color: #fff;
+      font-size: 16px;
+      margin: 0;
       transition: all 0.3s;
     }
   }
